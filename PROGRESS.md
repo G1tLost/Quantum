@@ -16,3 +16,9 @@ Newest at the bottom.
   crates.io. This restores the deterministic authority the local sandbox can't
   provide: from now on a change is "kept" only once its CI run is green. Verify:
   YAML validated; `cargo fmt --check` clean.
+- **2026-07-14 — first CI run caught a real defect.** CI #1 failed on
+  `clippy::write_literal` at `src/report.rs:219` (a `"RTT"` literal fed to a `{}`
+  placeholder) — a lint no static reviewer flagged. Inlined the literal per
+  clippy's suggestion (no output change). Verify: **CI #2 green** — fmt, clippy
+  (-D warnings), build --all-targets, and test all pass. Phase 1 is now
+  compile- and test-verified, not just statically reviewed.
