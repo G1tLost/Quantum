@@ -70,7 +70,7 @@ impl ScanConfig {
             .map(|t| parse_target_token(t))
             .collect::<Result<_>>()?;
 
-        // --- Ports: exactly one selection mode, defaulting to top-100 ---
+        // --- Ports: exactly one selection mode, defaulting to the top-ports list ---
         let ports = if let Some(spec) = &cli.ports {
             ports::parse_port_spec(spec)?
         } else if let Some(n) = cli.top_ports {

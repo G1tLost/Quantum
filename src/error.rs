@@ -25,10 +25,6 @@ pub enum Error {
     )]
     TooManyTargets { count: usize, cap: usize },
 
-    /// A target resolved to an address outside the authorized scope.
-    #[error("refusing to scan '{target}': outside the authorized scope")]
-    OutOfScope { target: String },
-
     /// A scope entry could not be parsed.
     #[error("invalid scope entry '{entry}': {reason}")]
     ScopeParse { entry: String, reason: String },
@@ -57,10 +53,6 @@ pub enum Error {
         #[source]
         source: std::io::Error,
     },
-
-    /// Rendering or writing a report failed.
-    #[error("report error: {0}")]
-    Report(String),
 
     /// A wrapped I/O error.
     #[error("i/o error: {0}")]

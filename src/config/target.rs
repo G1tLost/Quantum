@@ -164,6 +164,18 @@ fn is_plausible_hostname(token: &str) -> bool {
         return false;
     }
     let labels: Vec<&str> = token.split('.').collect();
+
+    // The rightmost label (the TLD) must not be entirely numeric. Per RFC 1123
+    // no real TLD is all-digits, and this is what disambiguates a hostname from
+    // a dotted-decimal look-alike: it rejects junk like "999.999.999.999" or
+    // "10.0.0.256" (invalid IPs) that would otherwise slip through as hostnames.
+    let tld_all_numeric = labels
+        .last()
+        .is_some_and(|l| !l.is_empty() && l.chars().all(|c| c.is_ascii_digit()));
+    if tld_all_numeric {
+        return false;
+    }
+
     labels.iter().all(|label| {
         !label.is_empty()
             && label.len() <= 63
@@ -343,8 +355,26 @@ mod tests {
 
     #[test]
     fn rejects_garbage() {
+        // Dotted-decimal look-alikes that are not valid IPs must not slip
+        // through as hostnames (their TLD label is all-numeric).
         assert!(parse_target_token("999.999.999.999").is_err());
+        assert!(parse_target_token("10.0.0.256").is_err());
+        assert!(parse_target_token("42").is_err());
+        // A label starting with '-' is not a valid hostname label.
         assert!(parse_target_token("--not-a-host").is_err());
+    }
+
+    #[test]
+    fn accepts_real_hostnames() {
+        assert!(matches!(
+            parse_target_token("localhost"),
+            Ok(TargetSpec::Host(_))
+        ));
+        // Numeric leading labels are fine as long as the TLD is not all-numeric.
+        assert!(matches!(
+            parse_target_token("3com.example.com"),
+            Ok(TargetSpec::Host(_))
+        ));
     }
 
     #[tokio::test]

@@ -19,7 +19,7 @@ path = "src/lib.rs"
 
 [dependencies]
 # Async runtime — the source of the scan speed.
-tokio = { version = "1", features = ["rt-multi-thread", "net", "time", "macros", "sync", "signal"] }
+tokio = { version = "1", features = ["rt-multi-thread", "net", "time", "macros"] }
 # CLI (derive API).
 clap = { version = "4", features = ["derive"] }
 # Serialization — JSON report is the machine-readable source of truth.
@@ -40,8 +40,8 @@ tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
 thiserror = "2"
 anyhow = "1"
 
-[dev-dependencies]
-tokio = { version = "1", features = ["rt-multi-thread", "net", "time", "macros", "sync", "io-util"] }
+# Integration and unit tests use the tokio features already enabled above, so
+# no separate [dev-dependencies] entry is required.
 
 [profile.release]
 opt-level = 3
