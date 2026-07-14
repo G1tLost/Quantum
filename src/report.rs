@@ -213,11 +213,7 @@ impl ScanReport {
             return Ok(());
         }
 
-        writeln!(
-            w,
-            "{:<39}  {:<10}  {:<7}  {}",
-            "HOST", "PORT", "STATE", "RTT"
-        )?;
+        writeln!(w, "{:<39}  {:<10}  {:<7}  RTT", "HOST", "PORT", "STATE")?;
         writeln!(w, "{}", "-".repeat(72))?;
         for host in &self.hosts {
             for p in &host.open_ports {
