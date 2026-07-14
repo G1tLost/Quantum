@@ -1,0 +1,8 @@
+/target
+**/*.rs.bk
+Cargo.lock.orig
+
+# Scanner runtime artifacts
+*.ferroscan.json
+/reports/
+ferroscan-audit.log
