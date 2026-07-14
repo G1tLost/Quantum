@@ -110,10 +110,15 @@ churn on it.
 * **Verification gates require crates.io egress.** Three of the four deterministic
   gates (`cargo build`, `cargo clippy`, `cargo test`) need to fetch dependencies
   from `index.crates.io`. In an environment whose network policy does not
-  allowlist that host, those gates cannot run and the edit→verify→commit loop
-  MUST NOT proceed on judgment alone (it would violate "deterministic gates over
-  judgment"). Only `cargo fmt --check` runs without network. Fix: add
-  `index.crates.io` (and `static.crates.io` for downloads) to the environment's
-  network egress allowlist, or run the loop in an environment that already
-  permits it. Until then, passes are limited to audit-only (read, report, no
-  commits of code changes).
+  allowlist that host, those gates cannot run locally and the edit→verify→commit
+  loop MUST NOT proceed on judgment alone (it would violate "deterministic gates
+  over judgment"). Only `cargo fmt --check` runs without network. To fix locally:
+  add `index.crates.io` (and `static.crates.io` for downloads) to the
+  environment's network egress allowlist.
+* **CI is the gate when local egress is blocked.** `.github/workflows/ci.yml`
+  runs all four gates on GitHub's runners (which reach crates.io), so the
+  deterministic authority is preserved even when this sandbox can't compile. The
+  honest loop under this constraint: make the smallest change → `cargo fmt
+  --check` locally → push → **read the CI result as the gate** → keep the change
+  only if CI is green, otherwise fix and re-push. Do not mark an iteration
+  "done" until its CI run passes. (Requires GitHub Actions enabled on the repo.)
